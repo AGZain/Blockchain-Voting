@@ -3,22 +3,28 @@ import java.util.HashMap;
 public class PoW{
     //State Variables
     HashMap<String, Double> problems = new HashMap<String, Double>();   //HashMap to store string for problem and double for answer
-    int index;  
+    int q_index;  
 
     /* THE CONSTRUCTOR */
-    public PoW(int index) {
+    public PoW(int q_index) {
         buildProblems();    //Calling function that builds the HashMap
-        this.index = index; //Index to decide which question to choose
+        this.q_index = q_index; //q_index to decide which question to choose
     }
 
-    /*TODO: Get Question Function from List */
+    /**
+     * This function gets all the questions within the problems HashMap
+     * @return returns the question based on the PoW's q_index
+     */
     public String getQuestion(){
         String questions[] = problems.keySet().toArray();
-        return questions[index - 1];
+        return questions[q_index - 1];
     }
-    /*TODO: Get Answer Function from given question */
+    /**
+     * This function uses the getQuestion() method to get the answer for the question at the q_index position
+     * @return returns the existing answer for the given question
+     */
     public String getAnswer(){
-        return problems.get(getQuestion(index - 1]));
+        return problems.get(getQuestion(q_index - 1]));
     }
     /**
      * This function assigns pre-written problems and answers into the problems HashMap
