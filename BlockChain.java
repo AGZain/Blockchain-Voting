@@ -1,9 +1,8 @@
 import java.lang.Math;
 
 public class BlockChain {
-    private Block[] chainOfBlocks;
+    private Block[] chainOfBlocks;  //Change to ArrayList?
 
-    //TODO: Generate PoW questions and Assign them to blocks
     //Use a random number to assign a random difficulty value from 1 - 5 to each block
     //After a block is assigned the value, assign the next block the next priority until
     //5 is reached. Then use the random number generator to assign a random difficulty again
@@ -14,7 +13,7 @@ public class BlockChain {
 
 
         //Do this part only if the block creation has been verified
-        //Get random number and based on that, create a PoW object and assign it to the Block
+        //Get random number and based on that, create a PoW object
         if(difficulty == 5) {
             difficulty = 0;    
         }
@@ -26,7 +25,7 @@ public class BlockChain {
         }
         //Create PoW and assign it the index
         PoW proof = new PoW(difficulty);
-        //TODO: Release PoW
+        //block.pow = proof;    //Assigning pow to a block, change "block" to the most recent block made
 
     }
 }
