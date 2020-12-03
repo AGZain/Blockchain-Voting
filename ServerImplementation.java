@@ -12,20 +12,23 @@ public class ServerImplementation implements Server {
     
     //ListOfNeighoughrServers
     List<nodeAddress> nodes = new ArrayList<nodeAddress>();
+    List<Server> servers = new ArrayList<Server>();
+    nodeAddress thisNode;
 
     public ServerImplementation() throws RemoteException {
         super();
     }
 
-    public void StartServer() {
+    public void StartServer(String name) {
         System.setSecurityManager(new SecurityManager());
         try {
-            String name = "TestServer";
             Server obj = new ServerImplementation();
             Server stub = (Server) UnicastRemoteObject.exportObject(obj, 0);
             Registry reg = LocateRegistry.getRegistry();
             reg.bind(name, stub);
             InetAddress addr = InetAddress.getLocalHost();
+            thisNode = new nodeAddress(addr.getHostAddress(), name);
+            addNodeAddress(thisNode);
             System.out.println("Server has started on " + addr.getHostAddress() + addr.getHostName());
         } catch(Exception exception) {
             exception.printStackTrace();
@@ -33,19 +36,39 @@ public class ServerImplementation implements Server {
         }
     }
 
-    public String registerNeighbor(String host) throws RemoteException {
+    public String registerNeighbor(nodeAddress newNode) throws RemoteException {
+        addNodeAddress(newNode);
+        System.out.println("conntecting to a node");
+        Registry registry = LocateRegistry.getRegistry(newNode.getAddress());
+        Server server = (Server) registry.lookup(newNode.getName());
+        servers.add(server);
         System.out.println("Time to register the neighbour");
-        return "TEST RETURN";
+        return "ADDED";
     }
 
-    public List<nodeAddress> getAllNodesOnNetwork() {
+    //this will be used to get all neighbours
+    public List<nodeAddress> getAllNodesOnNetwork() throws RemoteException{
         return nodes;
     }
 
-    public boolean addNode(nodeAddress node) {
+    public boolean addNodeAddress(nodeAddress node) {
         nodes.add(node);
         return true;
     }
+
+    //this will be used to register with all neighborus nrigbours this is it, 
+    public void registerWithAllNeighbors() throws Exception{
+        for(nodeAddress node : nodes) {
+            if(node.getAddress().equals(thisNode.getAddress()))
+                continue;
+            System.out.println("conntecting to a node");
+            Registry registry = LocateRegistry.getRegistry(node.getAddress());
+            Server server = (Server) registry.lookup(node.getName());
+            servers.add(server);
+            server.registerNeighbor(thisNode)
+        }
+    }
+
 
 
 
