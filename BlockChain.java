@@ -1,7 +1,13 @@
 import java.lang.Math;
+import java.net.*;
+import java.util.*;
 
 public class BlockChain {
-    private Block[] chainOfBlocks;  //Change to ArrayList?
+    List<Block> blocks;
+
+    public BlockChains() {
+        blocks = new ArrayList<Block>;
+    }
 
     public void createBlock() {
 

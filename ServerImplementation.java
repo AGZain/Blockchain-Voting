@@ -14,6 +14,7 @@ public class ServerImplementation implements Server {
     List<nodeAddress> nodes = new ArrayList<nodeAddress>();
     List<Server> servers = new ArrayList<Server>();
     nodeAddress thisNode;
+    BlackChain blackchain;
 
     public ServerImplementation() throws RemoteException {
         super();
@@ -59,7 +60,7 @@ public class ServerImplementation implements Server {
     //this will be used to register with all neighborus nrigbours this is it, 
     public void registerWithAllNeighbors() throws Exception{
         for(nodeAddress node : nodes) {
-            if(node.getAddress().equals(thisNode.getAddress()))
+            if(node.getHost().equals(thisNode.getHost()))
                 continue;
             System.out.println("conntecting to a node");
             Registry registry = LocateRegistry.getRegistry(node.getAddress());

@@ -12,10 +12,6 @@ public class BlockChainServer {
             ServerImplementation serverImplementation = new ServerImplementation();
             String name = args[0];
             serverImplementation.StartServer(name);
-            System.out.println("DOING OTHER STUFF");
-
-
-
             //if the args for a remote hsot and name are passed, then connect to that remote host and get all of its neighbours
             if (args.length >= 3)
                 blockchainServer.connectToNetwork("host", args[2], serverImplementation);    
@@ -36,6 +32,7 @@ public class BlockChainServer {
         for(nodeAddress node: networkNodes) {
             serverImplementation.addNodeAddress(node);
         }
+        
         System.out.println("starz");
         serverImplementation.registerWithAllNeighbors();
     }
