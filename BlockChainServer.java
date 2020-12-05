@@ -8,8 +8,10 @@ public class BlockChainServer {
     public static void main(String args[]) {
         
         BlockChainServer blockchainServer = new BlockChainServer();
+        boolean newNetwork = (args.length == 1) ? true : false;
+
         try {
-            ServerImplementation serverImplementation = new ServerImplementation();
+            ServerImplementation serverImplementation = new ServerImplementation(newNetwork);
             String name = args[0];
             serverImplementation.StartServer(name);
             //if the args for a remote hsot and name are passed, then connect to that remote host and get all of its neighbours

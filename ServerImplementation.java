@@ -16,8 +16,10 @@ public class ServerImplementation implements Server {
     nodeAddress thisNode;
     BlackChain blackchain;
 
+
     public ServerImplementation() throws RemoteException {
         super();
+        BlockChain = new BlockChain();
     }
 
     public void StartServer(String name) {
@@ -70,8 +72,9 @@ public class ServerImplementation implements Server {
         }
     }
 
+    public void applicationResponder() {
+        //have a blockingQueue in BlockChain classes that has a list of mined blocks. 
+        //when blocks are done mining, send message to application level to let app know that youre done. First person to win gets to resend 
 
-
-
-
+    }
 }
