@@ -3,11 +3,13 @@ import java.net.*;
 import java.util.*;
 import java.io.*;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 import java.security.MessageDigest;
 
 public class BlockChain extends Thread {
     List<Block> blocks;
-    BlockingQueue<String> newTransactions = new LinkedBlockingDeque<String>();   
+    BlockingQueue<String> newTransactions = new LinkedBlockingQueue<String>();   
     List<Block> minedBlocks;
     String latestHash;
 
@@ -23,6 +25,7 @@ public class BlockChain extends Thread {
 
     public void addNewTransaction(String transaction) {
         //users can add anew transaction which can be added to a blocking queue.
+        System.out.println("adding new trasnsction to blockcahin");
         try{
             newTransactions.add(transaction); 
         } catch(Exception exception) {
@@ -36,21 +39,26 @@ public class BlockChain extends Thread {
         //if no approval by application level, then drop. 
 
         while(true) {
-            String newTransaction = newTransactions.take();
-            //do POW then create block.
-            Block block = new Block(new java.util.Date().toString(),           //create the block based on the new transaction...
-                                    ++blocks.get(blocks.size()-1).id,
-                                    newTransaction,
-                                    latestHash,
-                                    1,                      //last two are temp. nounce and proof examples, will be replaced later
-                                    "10");
+            try {
+                String newTransaction = newTransactions.take();
+                //do POW then create block.
+                System.out.println("got a new block to mine!");
+                Block block = new Block(new java.util.Date().toString(),           //create the block based on the new transaction...
+                                        ++blocks.get(blocks.size()-1).id,
+                                        newTransaction,
+                                        latestHash,
+                                        1,                      //last two are temp. nounce and proof examples, will be replaced later
+                                        "10");
 
-            //generate hash. 
+                //generate hash. 
+            } catch(Exception exception) {
+                exception.printStackTrace();
+            }
 
         }
     }
 
-    public String generateHash(Block block) {
+    public String generateHash(Block block) throws Exception{
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(bos);    
@@ -70,6 +78,7 @@ public class BlockChain extends Thread {
     }
 
     public void run() {
+        System.out.println("Starting mining");
         mine();
     }
 }

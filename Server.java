@@ -4,6 +4,8 @@ import java.net.*;
 import java.util.*;
 
 public interface Server extends Remote {
-    String registerNeighbor(String host) throws RemoteException;
+    void registerNeighbor(String host, String name) throws RemoteException;
     List<nodeAddress> getAllNodesOnNetwork() throws RemoteException;
+    void registerApplication(String uuid, String address, String name) throws RemoteException;
+    void receiveVote(String vote) throws RemoteException;
 }

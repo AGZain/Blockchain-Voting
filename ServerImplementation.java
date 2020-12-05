@@ -14,21 +14,41 @@ public class ServerImplementation implements Server {
     List<nodeAddress> nodes = new ArrayList<nodeAddress>();
     List<Server> servers = new ArrayList<Server>();
     nodeAddress thisNode;
-    BlackChain blackchain;
+    BlockChain blockchain;
+    HashMap<String, Client> clients = new HashMap<String, Client>();
 
 
-    public ServerImplementation() throws RemoteException {
+    public ServerImplementation() throws RemoteException{
         super();
-        BlockChain = new BlockChain();
+    }
+
+    public ServerImplementation(boolean genesisNeeded) throws RemoteException {
+        super();
+        blockchain = new BlockChain();
+        if(genesisNeeded) {
+            System.out.println("Create Genesis block");
+            Block genesis = new Block(new java.util.Date().toString(),
+                                    0,
+                                    "GENESIS-BLOCK",
+                                    "000000",
+                                    0,
+                                    "0");
+            blockchain.blocks.add(genesis);    
+        }
+
+        blockchain.start();
     }
 
     public void StartServer(String name) {
         System.setSecurityManager(new SecurityManager());
         try {
-            Server obj = new ServerImplementation();
-            Server stub = (Server) UnicastRemoteObject.exportObject(obj, 0);
+            // Server obj = new ServerImplementation();
+            Server stub = (Server) UnicastRemoteObject.exportObject(this, 0);
             Registry reg = LocateRegistry.getRegistry();
+            System.out.println("1");
             reg.bind(name, stub);
+            System.out.println("2");
+
             InetAddress addr = InetAddress.getLocalHost();
             thisNode = new nodeAddress(addr.getHostAddress(), name);
             addNodeAddress(thisNode);
@@ -39,14 +59,19 @@ public class ServerImplementation implements Server {
         }
     }
 
-    public String registerNeighbor(nodeAddress newNode) throws RemoteException {
-        addNodeAddress(newNode);
-        System.out.println("conntecting to a node");
-        Registry registry = LocateRegistry.getRegistry(newNode.getAddress());
-        Server server = (Server) registry.lookup(newNode.getName());
-        servers.add(server);
-        System.out.println("Time to register the neighbour");
-        return "ADDED";
+    public void registerNeighbor(String host, String name) throws RemoteException {
+        try{
+            nodeAddress newNode = new nodeAddress(host, name);
+            addNodeAddress(newNode);
+            System.out.println("conntecting to a node");
+            Registry registry = LocateRegistry.getRegistry(newNode.getAddress());
+            Server server = (Server) registry.lookup(newNode.getName());
+            servers.add(server);
+            System.out.println("Time to register the neighbour");
+        } catch(Exception exception) {
+            exception.printStackTrace();
+        }
+        // return "ADDED";
     }
 
     //this will be used to get all neighbours
@@ -62,13 +87,34 @@ public class ServerImplementation implements Server {
     //this will be used to register with all neighborus nrigbours this is it, 
     public void registerWithAllNeighbors() throws Exception{
         for(nodeAddress node : nodes) {
-            if(node.getHost().equals(thisNode.getHost()))
+            if(node.getName().equals(thisNode.getName()))
                 continue;
             System.out.println("conntecting to a node");
             Registry registry = LocateRegistry.getRegistry(node.getAddress());
             Server server = (Server) registry.lookup(node.getName());
             servers.add(server);
-            server.registerNeighbor(thisNode)
+            server.registerNeighbor(thisNode.getAddress(), thisNode.getName());
+        }
+    }
+
+    public void receiveVote(String vote) throws RemoteException {
+        try{
+            System.out.println("Vote recived");
+            blockchain.addNewTransaction(vote);
+        }catch(Exception exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    public void registerApplication(String uuid, String address, String name) throws RemoteException {
+        try{
+            Registry registry = LocateRegistry.getRegistry(address);
+            Client client = (Client) registry.lookup(name); 
+
+            clients.put(uuid, client);
+            System.out.println("Client " + uuid + " is connected");
+        } catch(Exception exception) {
+            exception.printStackTrace();
         }
     }
 
