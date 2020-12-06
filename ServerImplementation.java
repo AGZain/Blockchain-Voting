@@ -57,7 +57,7 @@ public class ServerImplementation extends Thread implements Server {
             thisNode = new nodeAddress(addr.getHostAddress(), name);
             addNodeAddress(thisNode);
             this.start();
-            System.out.println("Server has started on " + addr.getHostAddress() + addr.getHostName());
+            System.out.println("Server has started on " + addr.getHostAddress() +  " " + name);
         } catch(Exception exception) {
             exception.printStackTrace();
 
@@ -68,11 +68,10 @@ public class ServerImplementation extends Thread implements Server {
         try{
             nodeAddress newNode = new nodeAddress(host, name);
             addNodeAddress(newNode);
-            System.out.println("conntecting to a node");
+            System.out.println("Neighbor node registered");
             Registry registry = LocateRegistry.getRegistry(newNode.getAddress());
             Server server = (Server) registry.lookup(newNode.getName());
             servers.add(server);
-            System.out.println("Time to register the neighbour");
         } catch(Exception exception) {
             exception.printStackTrace();
         }
@@ -91,20 +90,21 @@ public class ServerImplementation extends Thread implements Server {
 
     //this will be used to register with all neighborus nrigbours this is it, 
     public void registerWithAllNeighbors() throws Exception{
+        System.out.println("Connecting to all nodes on network..");
         for(nodeAddress node : nodes) {
             if(node.getName().equals(thisNode.getName()))
                 continue;
-            System.out.println("conntecting to a node");
             Registry registry = LocateRegistry.getRegistry(node.getAddress());
             Server server = (Server) registry.lookup(node.getName());
             servers.add(server);
             server.registerNeighbor(thisNode.getAddress(), thisNode.getName());
         }
+        System.out.println("Connections established");
     }
 
     public void receiveVote(String vote, String applicationUUID, String voteUUID) throws RemoteException {
         try{
-            System.out.println("Vote recived");
+            System.out.println("Vote received");
             voters.remove(voteUUID);
             blockchain.addNewTransaction(new Vote(vote, applicationUUID, voteUUID));
         }catch(Exception exception) {

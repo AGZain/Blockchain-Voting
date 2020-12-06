@@ -39,7 +39,6 @@ public class BlockChainServer {
             serverImplementation.addNodeAddress(node);
         }
         
-        System.out.println("starz");
         serverImplementation.registerWithAllNeighbors();
     }
 
