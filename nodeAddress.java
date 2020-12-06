@@ -1,4 +1,6 @@
-public class nodeAddress {
+import java.io.Serializable;
+
+public class nodeAddress implements Serializable {
     String address;
     String name;
 

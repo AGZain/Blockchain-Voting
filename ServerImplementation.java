@@ -133,11 +133,23 @@ public class ServerImplementation extends Thread implements Server {
 
                 if(winner) {
                     Block block = blockchain.getPendingBlock(completed.getVoteId());
+                    String pow = blockchain.getPendingPOW(completed.getVoteId());
+                    System.out.println("Sending winning block to neighbours");
+
+                    for(Server server : servers) {
+                        server.receiveBlockAndPOW(pow, block);
+                    }
+                    receiveBlockAndPOW(pow, block);
                 }
             } catch(Exception exception) {
                 exception.printStackTrace();
             }
         }
+    }
+
+    public void receiveBlockAndPOW(String POW, Block block) throws RemoteException {
+        //verify POW first.
+        blockchain.createBlock(block);
     }
 
 

@@ -8,4 +8,5 @@ public interface Server extends Remote {
     List<nodeAddress> getAllNodesOnNetwork() throws RemoteException;
     void registerApplication(String uuid, String address, String name) throws RemoteException;
     void receiveVote(String vote, String applicationUUID, String voteUUID) throws RemoteException;
+    void receiveBlockAndPOW(String POW, Block block) throws RemoteException;
 }

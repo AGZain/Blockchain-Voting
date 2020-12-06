@@ -79,11 +79,12 @@ public class BlockChain extends Thread {
         return hash;
     }
 
-    public void createBlock() {
+    public void createBlock(Block block) {
         //Do this part only if the block creation has been verified
         //oW pow = new PoW();    
         //block.pow = pow;    //Assigning pow to a block, change "block" to the most recent block made
-        
+        System.out.println("Adding new block to blockchain");
+        blocks.add(block);
     }
 
     public Vote completedMine() {
