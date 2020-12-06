@@ -7,23 +7,17 @@ import java.lang.Math;
 public class PoW{
     //State Variables
     private static ArrayList<Integer> res = new ArrayList<Integer>();
-    private static ArrayList<Integer> non_res = new ArrayList<Integer>();//List of nonresiduals just to use if you want the verification to be different 
-    int block_num = 0;
-    int nounce = 0;
+    static int nounce = 300000;    //nounce = 300000 took my laptop around 40 seconds to solve, you can tweak these values 
     /* THE CONSTRUCTOR */
-    public PoW(int block_num) {
-        this.block_num = block_num;
+    public PoW() {
     }
 
     /**
      * Function that takes a given nounce and calculates all the quantum residual and non-residual integers
      * These are then stored in the res and non_res lists respectively
      */
-    void buildProblems(int block_num) {
-        //nounce = 300000 took my laptop around 40 seconds to solve, you can tweak these values 
-        nounce = 300000 - (block_num * 1000);        
+    void buildProblems() {
         ArrayList<Integer> x_list = new ArrayList<Integer>();   //list of all numbers co-prime of nounce
-
         /* Finding co primes for given nounce */
         for(int i = 1; i < nounce; i++) {
             if(rel_Prime(nounce, i) ) { 
@@ -41,13 +35,6 @@ public class PoW{
      */
     public ArrayList<Integer> get_res() {
         return res;
-    }
-    /**
-     * Getter function that gets the list of all non-residual integers
-     * @return the list of non-residual integers
-     */
-    public ArrayList<Integer> get_non_res() {
-        return non_res;
     }
 
     /**
@@ -90,16 +77,12 @@ public class PoW{
             break;
             //If the list is not empty, perform the loop
             default:
-                //If this residue for x was already found, make x a non-residue
-                if(res.contains(a) ) {
-                    non_res.add(x);
-                    System.out.println("Non Res -> " + x);
-                }
-                else {
-                    //If this residue for x was not found, make var 'a' a residue
-                    res.add(a);
-                    System.out.println("Res -> " + a);
-                }
+            //If this residue for x was already found, make x a non-residue
+            if(!res.contains(a) ) {
+                //If this residue for x was not found, make var 'a' a residue
+                res.add(a);
+                System.out.println("Res -> " + a);
+            }            
         }   
     }
 
