@@ -2,35 +2,37 @@ import java.util.ArrayList;
 import java.lang.Math;
 
 //Equation:
-//x^2 = a(mod n) || Math.pow(x, 2) = a % n
+//x^2 = a(mod nounce) || Math.pow(x, 2) = a % nounce
 
 public class PoW{
     //State Variables
     private static ArrayList<Integer> res = new ArrayList<Integer>();
-    private static ArrayList<Integer> non_res = new ArrayList<Integer>(); 
-
+    private static ArrayList<Integer> non_res = new ArrayList<Integer>();//List of nonresiduals just to use if you want the verification to be different 
+    int block_num = 0;
+    int nounce = 0;
     /* THE CONSTRUCTOR */
-    public PoW() {
-        buildProblems();    //Calling function that builds the HashMap
+    public PoW(int block_num) {
+        this.block_num = block_num;
     }
 
     /**
-     * Function that takes a given n and calculates all the quantum residual and non-residual integers
+     * Function that takes a given nounce and calculates all the quantum residual and non-residual integers
      * These are then stored in the res and non_res lists respectively
      */
-    void buildProblems() {
-        int n = (int)(Math.random() * 550000) + 500000;     //n = 500000 took my laptop around 14 seconds to solve    
-        ArrayList<Integer> x_list = new ArrayList<Integer>();   //list of all numbers co-prime of n
+    void buildProblems(int block_num) {
+        //nounce = 300000 took my laptop around 40 seconds to solve, you can tweak these values 
+        nounce = 300000 - (block_num * 1000);        
+        ArrayList<Integer> x_list = new ArrayList<Integer>();   //list of all numbers co-prime of nounce
 
-        /* Finding co primes for given n */
-        for(int i = 1; i < n; i++) {
-            if(rel_Prime(n, i) ) { 
+        /* Finding co primes for given nounce */
+        for(int i = 1; i < nounce; i++) {
+            if(rel_Prime(nounce, i) ) { 
                 x_list.add(i);  //Adding the co-prime to the list of x variables
             }
         }
-        //Calling function to find residues and nonresidues from x_list
+        /*Calling function to find residues and nonresidues from x_list*/
         for(int i = 0; i < x_list.size(); i++) {
-            find_res(n, x_list.get(i) );
+            find_res(nounce, x_list.get(i) );
         }
     }
     /**
@@ -49,36 +51,36 @@ public class PoW{
     }
 
     /**
-     * Function to check if x and n are co-prime 
-     * @param n The modulus integer
+     * Function to check if x and nounce are co-prime 
+     * @param nounce The modulus integer
      * @param x Integer for perfect square
-     * @return true if x and n are co-prime and false if otherwise
+     * @return true if x and nounce are co-prime and false if otherwise
      */
-    static boolean rel_Prime(int n, int x) {
-        /* Algorithm to check if a and n have the same factors */
+    static boolean rel_Prime(int nounce, int x) {
+        /* Algorithm to check if a and nounce have the same factors */
         //Get the factors of x
         for(int i = 2; i < x; i++) {
             switch(x % i) {
                 case 0:
                 //i is a factor of X 
-                switch(n % i) {
-                    //i is a factor of x and n, therefore x and n are not co-prime and cannot be used
+                switch(nounce % i) {
+                    //i is a factor of x and nounce, therefore x and nounce are not co-prime and cannot be used
                     case 0:
                         return false;
                 }
             }
         }
-        //If n and x do not share any factors then they are co prime and are applicable for the equation
+        //If nounce and x do not share any factors then they are co prime and are applicable for the equation
         return true;
     }
 
     /**
      * Function that takes two co-prime integers and finds all quadratic residues and non-residues
-     * @param n The modulus integer
+     * @param nounce The modulus integer
      * @param x The integer for perfect square
      */
-    static void find_res(int n, int x) {
-        int a  = (int)Math.pow(x, 2)  % n;  //Potential quadratic residue
+    static void find_res(int nounce, int x) {
+        int a  = (int)Math.pow(x, 2)  % nounce;  //Potential quadratic residue
 
         //If the list is empty, add the first found 'a' as a residual
         switch(res.size() ) {
@@ -100,5 +102,27 @@ public class PoW{
                 }
         }   
     }
-    
+
+    /**
+     * Check list if as are all valid by getting x from x = Math.sqrt(a % 10)
+     * And then check if x is co prime with nounce
+     * @param nounce given mod value
+     * @param a_list list of found residues
+     * @return Boolean if the answer is correct or incorrect
+     */ 
+    static Boolean checkAns(int nounce, ArrayList<Integer>a_list) {
+        for(int i = 0; i < a_list.size(); i++) {
+            double gcd = findGCD(a_list.get(i), nounce);
+            if(gcd != 1){ 
+                return false;
+            }
+        }
+        return true;
+    }
+    private static int findGCD(int num1, int num2) {
+        if(num2 == 0) {
+            return num1;
+        }
+        return findGCD(num2, num1 % num2);
+    }
 }
