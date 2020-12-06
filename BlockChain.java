@@ -9,8 +9,13 @@ import java.security.MessageDigest;
 
 public class BlockChain extends Thread {
     List<Block> blocks;
-    BlockingQueue<String> newTransactions = new LinkedBlockingQueue<String>();   
-    List<Block> minedBlocks;
+    BlockingQueue<Vote> newTransactions = new LinkedBlockingQueue<Vote>();   
+    BlockingQueue<Vote> completedTransaction = new LinkedBlockingQueue<Vote>();   
+    HashMap<String, Block> pendingBlocks = new HashMap<String, Block>();
+    HashMap<String, String> pendingPOWs = new HashMap<String, String>(); 
+
+
+    List<Block> minedBlocks;                    //might not be needed, maybe we can remove
     String latestHash;
 
     public BlockChain() {
@@ -23,11 +28,11 @@ public class BlockChain extends Thread {
         this.minedBlocks = minedBlocks;
     }
 
-    public void addNewTransaction(String transaction) {
+    public void addNewTransaction(Vote vote) {
         //users can add anew transaction which can be added to a blocking queue.
         System.out.println("adding new trasnsction to blockcahin");
         try{
-            newTransactions.add(transaction); 
+            newTransactions.add(vote); 
         } catch(Exception exception) {
             exception.printStackTrace();
         }
@@ -40,17 +45,21 @@ public class BlockChain extends Thread {
 
         while(true) {
             try {
-                String newTransaction = newTransactions.take();
+                Vote newTransaction = newTransactions.take();
                 //do POW then create block.
                 System.out.println("got a new block to mine!");
                 Block block = new Block(new java.util.Date().toString(),           //create the block based on the new transaction...
                                         ++blocks.get(blocks.size()-1).id,
-                                        newTransaction,
+                                        newTransaction.getVote(),
                                         latestHash,
                                         1,                      //last two are temp. nounce and proof examples, will be replaced later
                                         "10");
 
-                //generate hash. 
+                //generate hash.
+
+                pendingBlocks.put(newTransaction.getVoteId(), block);
+                pendingPOWs.put(newTransaction.getVoteId(), "TEST POW");
+                completedTransaction.add(newTransaction); 
             } catch(Exception exception) {
                 exception.printStackTrace();
             }
@@ -75,6 +84,27 @@ public class BlockChain extends Thread {
         //oW pow = new PoW();    
         //block.pow = pow;    //Assigning pow to a block, change "block" to the most recent block made
         
+    }
+
+    public Vote completedMine() {
+        try{
+            return completedTransaction.take();
+        } catch(Exception exception) {
+            exception.printStackTrace();
+        }
+        return new Vote("ERROR", "ERROR", "ERROR");
+    }
+
+    public Block getPendingBlock(String voteUUID) {
+        Block pendingBlock = pendingBlocks.get(voteUUID);
+        pendingBlocks.remove(voteUUID);
+        return pendingBlock;
+    }
+
+    public String getPendingPOW(String voteUUID) {
+        String pendingPOW = pendingPOWs.get(voteUUID);
+        pendingPOWs.remove(voteUUID);
+        return pendingPOW;
     }
 
     public void run() {

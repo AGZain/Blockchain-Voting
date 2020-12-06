@@ -8,7 +8,7 @@ import java.util.*;
 
 
 
-public class ServerImplementation implements Server {
+public class ServerImplementation extends Thread implements Server {
     
     //ListOfNeighoughrServers
     List<nodeAddress> nodes = new ArrayList<nodeAddress>();
@@ -52,6 +52,7 @@ public class ServerImplementation implements Server {
             InetAddress addr = InetAddress.getLocalHost();
             thisNode = new nodeAddress(addr.getHostAddress(), name);
             addNodeAddress(thisNode);
+            this.start();
             System.out.println("Server has started on " + addr.getHostAddress() + addr.getHostName());
         } catch(Exception exception) {
             exception.printStackTrace();
@@ -97,10 +98,10 @@ public class ServerImplementation implements Server {
         }
     }
 
-    public void receiveVote(String vote) throws RemoteException {
+    public void receiveVote(String vote, String applicationUUID, String voteUUID) throws RemoteException {
         try{
             System.out.println("Vote recived");
-            blockchain.addNewTransaction(vote);
+            blockchain.addNewTransaction(new Vote(vote, applicationUUID, voteUUID));
         }catch(Exception exception) {
             exception.printStackTrace();
         }
@@ -122,5 +123,25 @@ public class ServerImplementation implements Server {
         //have a blockingQueue in BlockChain classes that has a list of mined blocks. 
         //when blocks are done mining, send message to application level to let app know that youre done. First person to win gets to resend 
 
+        while(true) {
+            try{
+                Vote completed = blockchain.completedMine();
+                System.out.println("Vote id: " + completed.getVoteId() + " has been completed");
+
+                Client client = clients.get(completed.getApplicationId());
+                boolean winner = client.transactionCompleted(completed.getVoteId());
+
+                if(winner) {
+                    Block block = blockchain.getPendingBlock(completed.getVoteId());
+                }
+            } catch(Exception exception) {
+                exception.printStackTrace();
+            }
+        }
+    }
+
+
+    public void run() {
+        applicationResponder();
     }
 }

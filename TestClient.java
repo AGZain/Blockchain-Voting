@@ -3,12 +3,15 @@ import java.rmi.*;
 import java.rmi.registry.*;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.UUID;
+import java.util.*;    
 
 
 public class TestClient implements Client {
     Server server;
     String uuid;
     String testClient = "testclient";
+    HashSet<String> voteUUIDs = new HashSet<String>();
+
     public TestClient(Server server) throws RemoteException {
         super();
         this.server = server;
@@ -35,8 +38,8 @@ public class TestClient implements Client {
     public void StartServer(String name) {
         System.setSecurityManager(new SecurityManager());
         try {
-            Client obj = new TestClient();
-            Client stub = (Client) UnicastRemoteObject.exportObject(obj, 0);
+            // Client obj = new TestClient();
+            Client stub = (Client) UnicastRemoteObject.exportObject(this, 0);
             Registry reg = LocateRegistry.getRegistry();
             reg.bind(name, stub);
 
@@ -60,15 +63,25 @@ public class TestClient implements Client {
 
     public void submitVote(String vote) {
         try{
-            System.out.println("sending vote..");
-            server.receiveVote(vote);
+            String voteUUID = UUID.randomUUID().toString();
+            voteUUIDs.add(voteUUID);
+            System.out.println("sending vote.. with UUID " + voteUUID);
+            server.receiveVote(vote, this.uuid, voteUUID);
         } catch(Exception exception) {
             exception.printStackTrace();
         }
     }
 
-    public void testMethod() throws RemoteException {
-        System.out.println("Test");
+    public boolean transactionCompleted(String voteUUID) throws RemoteException {
+
+        if(voteUUIDs.contains(voteUUID)) {
+            voteUUIDs.remove(voteUUID);
+            System.out.println(voteUUID + ": a miner has completed this transaction.");
+            return true;
+        } else {
+            System.out.println(voteUUID + ": a transaction does not exist. Maybe it has already been completed?");
+            return false;
+        }
     }
 
 }
