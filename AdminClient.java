@@ -38,7 +38,7 @@ public class AdminClient {
         Scanner scanner = new Scanner(System.in);
         String name;
         System.out.print("\n\nEnter name of candidate: ");
-        name = scanner.next();
+        name = scanner.nextLine();
         //SEND NAME TO BLOCKCHAIN
         try {
             for(Server server : servers) {

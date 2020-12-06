@@ -28,7 +28,7 @@ public class TestClient implements Client {
             TestClient testClient = new TestClient();
             testClient.StartServer("testclient");
             testClient.connectToServers("127.0.0.1", "test");
-            testClient.votingPage();
+            testClient.mainMenu();
 
 
         } catch (Exception exception) {
@@ -62,9 +62,9 @@ public class TestClient implements Client {
 
                 servers.add(newServer);
                 newServer.registerApplication(uuid, "127.0.0.1", testClient);
-
             }
             this.currServer = server;
+            voteOptions = currServer.getCandidates();
         }catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -86,7 +86,7 @@ public class TestClient implements Client {
 
         if(voteUUIDs.contains(voteUUID)) {
             voteUUIDs.remove(voteUUID);
-            System.out.println(voteUUID + ": a miner has completed this transaction.");
+            // System.out.println(voteUUID + ": a miner has completed this transaction.");
             return true;
         } else {
             // System.out.println(voteUUID + ": a transaction does not exist. Maybe it has already been completed?");
@@ -116,7 +116,7 @@ public class TestClient implements Client {
         Scanner scanner = new Scanner(System.in);
         int vote;
         String id;
-        System.out.print("Please enter your voter id: ");
+        System.out.print("\nPlease enter your voter id: ");
         id = scanner.next();
         try {
             if(!currServer.verifyVoter(id)) {
@@ -127,12 +127,6 @@ public class TestClient implements Client {
             exception.printStackTrace();
         }
         
-        voteOptions.add("Human");
-        voteOptions.add("Robot");
-        voteOptions.add("Alien");
-        voteOptions.add("Martian");
-        voteOptions.add("Zombie");
-
         System.out.println("Pick option to vote for: ");
         for(int optionNumber = 0; optionNumber < voteOptions.size(); optionNumber++) {
             System.out.println(optionNumber + ". " + voteOptions.get(optionNumber));
@@ -146,7 +140,35 @@ public class TestClient implements Client {
     }
 
     public void voteStats() {
-        System.out.println("DISPLAY VOTE STATS");
+        List<Block> blocks;
+        HashMap<String, Integer> votes = new HashMap<String, Integer>();
+        try {
+            blocks = currServer.getLatestBlockChain();
+            String winner = "";
+            int winnerVotes = 0;
+            for(Block block : blocks) {
+                String vote = block.getData();
+                if(vote.equals("GENESIS-BLOCK"))
+                    continue;
+                
+                if(!votes.containsKey(vote)) {
+                    votes.put(vote, 1);
+                } else {
+                    votes.put(vote, votes.get(vote) + 1);
+                }
+                if(votes.get(vote) > winnerVotes) {
+                    winnerVotes = votes.get(vote);
+                    winner = vote;
+                } else if(votes.get(vote) == winnerVotes) {
+                    winner += " and " + vote;
+                }
+            }
+            System.out.println(votes);
+            System.out.println("\nWinner so far is: " + winner + "\n\n");
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        mainMenu();
     }
 
 }

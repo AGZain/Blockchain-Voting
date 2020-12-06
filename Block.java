@@ -21,4 +21,8 @@ public class Block implements Serializable{
     public String getPrevHash() {
         return prevHash;
     }
+
+    public String getData() {
+        return data;
+    }
 }
