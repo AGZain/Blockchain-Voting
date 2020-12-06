@@ -30,12 +30,15 @@ public class BlockChainServer {
         Server server = (Server) registry.lookup(name);
 
         networkNodes = server.getAllNodesOnNetwork();
-        
+        serverImplementation.setBlockChainAndHash(server.getLatestBlockChain(), server.getLatestHash());
+        serverImplementation.voters = server.getVoters();
+        serverImplementation.candidates = server.getCandidates();
+
+
         for(nodeAddress node: networkNodes) {
             serverImplementation.addNodeAddress(node);
         }
         
-        System.out.println("starz");
         serverImplementation.registerWithAllNeighbors();
     }
 
