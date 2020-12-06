@@ -6,8 +6,8 @@ import java.lang.Math;
 
 public class PoW{
     //State Variables
-    private static ArrayList<Integer> res = new ArrayList<Integer>();
-    static int nounce = 300000;    //nounce = 300000 took my laptop around 40 seconds to solve, you can tweak these values 
+    static ArrayList<Integer> res = new ArrayList<Integer>();
+    static int nounce = 8;    //nounce = 300000 took my laptop around 40 seconds to solve, you can tweak these values 
     /* THE CONSTRUCTOR */
     public PoW() {
     }
@@ -44,20 +44,19 @@ public class PoW{
      * @return true if x and nounce are co-prime and false if otherwise
      */
     static boolean rel_Prime(int nounce, int x) {
-        /* Algorithm to check if a and nounce have the same factors */
+        /* Algorithm to check if x and nounce have the same factors */
         //Get the factors of x
-        for(int i = 2; i < x; i++) {
+        for(int i = 2; i <= x; i++) {
             switch(x % i) {
                 case 0:
-                //i is a factor of X 
+                //X's factor to check with nounce
                 switch(nounce % i) {
-                    //i is a factor of x and nounce, therefore x and nounce are not co-prime and cannot be used
+                    //x and nounce aren't co-prime, ie they share a factor
                     case 0:
                         return false;
                 }
             }
         }
-        //If nounce and x do not share any factors then they are co prime and are applicable for the equation
         return true;
     }
 
@@ -81,7 +80,7 @@ public class PoW{
             if(!res.contains(a) ) {
                 //If this residue for x was not found, make var 'a' a residue
                 res.add(a);
-                System.out.println("Res -> " + a);
+                System.out.println("Res -> " + a + ", " + x);
             }            
         }   
     }
