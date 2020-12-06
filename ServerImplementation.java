@@ -6,8 +6,6 @@ import java.rmi.server.UnicastRemoteObject;
 import java.net.*;
 import java.util.*;
 
-
-
 public class ServerImplementation extends Thread implements Server {
     
     //ListOfNeighoughrServers
@@ -16,7 +14,8 @@ public class ServerImplementation extends Thread implements Server {
     nodeAddress thisNode;
     BlockChain blockchain;
     HashMap<String, Client> clients = new HashMap<String, Client>();
-
+    HashSet<String> voters = new HashSet<String>();
+    List<String> candidates = new ArrayList<String>();
 
     public ServerImplementation() throws RemoteException{
         super();
@@ -106,6 +105,7 @@ public class ServerImplementation extends Thread implements Server {
     public void receiveVote(String vote, String applicationUUID, String voteUUID) throws RemoteException {
         try{
             System.out.println("Vote recived");
+            voters.remove(voteUUID);
             blockchain.addNewTransaction(new Vote(vote, applicationUUID, voteUUID));
         }catch(Exception exception) {
             exception.printStackTrace();
@@ -170,6 +170,25 @@ public class ServerImplementation extends Thread implements Server {
         blockchain.latestHash = hash;
     }
 
+    public void addVoter(String uniqueVoterId) throws RemoteException {
+        voters.add(uniqueVoterId);
+    } 
+
+    public void addCandidate(String candidate) throws RemoteException {
+        candidates.add(candidate);
+    }
+
+    public HashSet<String> getVoters() throws RemoteException {
+        return voters;
+    }
+
+    public List<String> getCandidates() throws RemoteException {
+        return candidates;
+    }
+
+    public boolean verifyVoter(String voterId) throws RemoteException {
+        return voters.contains(voterId);
+    }
 
     public void run() {
         applicationResponder();

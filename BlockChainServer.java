@@ -31,7 +31,10 @@ public class BlockChainServer {
 
         networkNodes = server.getAllNodesOnNetwork();
         serverImplementation.setBlockChainAndHash(server.getLatestBlockChain(), server.getLatestHash());
-        
+        serverImplementation.voters = server.getVoters();
+        serverImplementation.candidates = server.getCandidates();
+
+
         for(nodeAddress node: networkNodes) {
             serverImplementation.addNodeAddress(node);
         }

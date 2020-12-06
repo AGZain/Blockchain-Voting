@@ -11,4 +11,9 @@ public interface Server extends Remote {
     void receiveBlockAndPOW(String POW, Block block) throws RemoteException;
     List<Block> getLatestBlockChain() throws RemoteException;
     String getLatestHash() throws RemoteException;
+    void addVoter(String uniqueVoterId) throws RemoteException;
+    void addCandidate(String candidate) throws RemoteException;
+    HashSet<String> getVoters() throws RemoteException;
+    List<String> getCandidates() throws RemoteException;
+    boolean verifyVoter(String voterId) throws RemoteException;
 }
