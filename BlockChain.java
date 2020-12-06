@@ -30,7 +30,7 @@ public class BlockChain extends Thread {
 
     public void addNewTransaction(Vote vote) {
         //users can add anew transaction which can be added to a blocking queue.
-        System.out.println("adding new trasnsction to blockcahin");
+        System.out.println("adding new transaction to blockchain");
         try{
             newTransactions.add(vote); 
         } catch(Exception exception) {
@@ -67,7 +67,7 @@ public class BlockChain extends Thread {
         }
     }
 
-    public String generateHash(Block block) throws Exception{
+    public String generateHash(Block block) throws Exception {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(bos);    
@@ -84,7 +84,14 @@ public class BlockChain extends Thread {
         //oW pow = new PoW();    
         //block.pow = pow;    //Assigning pow to a block, change "block" to the most recent block made
         System.out.println("Adding new block to blockchain");
-        blocks.add(block);
+        if(block.getPrevHash().equals(latestHash)) {
+            try {
+                latestHash = generateHash(block);
+                blocks.add(block);
+            } catch(Exception exception) {
+                exception.printStackTrace();
+            }
+        }
     }
 
     public Vote completedMine() {

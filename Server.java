@@ -9,4 +9,6 @@ public interface Server extends Remote {
     void registerApplication(String uuid, String address, String name) throws RemoteException;
     void receiveVote(String vote, String applicationUUID, String voteUUID) throws RemoteException;
     void receiveBlockAndPOW(String POW, Block block) throws RemoteException;
+    List<Block> getLatestBlockChain() throws RemoteException;
+    String getLatestHash() throws RemoteException;
 }

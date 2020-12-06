@@ -33,7 +33,12 @@ public class ServerImplementation extends Thread implements Server {
                                     "000000",
                                     0,
                                     "0");
-            blockchain.blocks.add(genesis);    
+            try {
+                blockchain.blocks.add(genesis); 
+                blockchain.latestHash = blockchain.generateHash(genesis);
+            } catch(Exception exception) {
+                exception.printStackTrace();
+            }   
         }
 
         blockchain.start();
@@ -150,6 +155,19 @@ public class ServerImplementation extends Thread implements Server {
     public void receiveBlockAndPOW(String POW, Block block) throws RemoteException {
         //verify POW first.
         blockchain.createBlock(block);
+    }
+
+    public List<Block> getLatestBlockChain() throws RemoteException {
+        return blockchain.blocks;
+    }
+    
+    public String getLatestHash() throws RemoteException {
+        return blockchain.latestHash;
+    }
+
+    public void setBlockChainAndHash(List<Block> blocks, String hash) {
+        blockchain.blocks = blocks;
+        blockchain.latestHash = hash;
     }
 
 

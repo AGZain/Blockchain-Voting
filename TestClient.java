@@ -7,14 +7,15 @@ import java.util.*;
 
 
 public class TestClient implements Client {
-    Server server;
+    // Server server;
+    List <Server> servers = new ArrayList<Server>();
     String uuid;
     String testClient = "testclient";
     HashSet<String> voteUUIDs = new HashSet<String>();
 
     public TestClient(Server server) throws RemoteException {
         super();
-        this.server = server;
+        // this.server = server;
     }
 
     public TestClient() throws RemoteException {
@@ -54,8 +55,16 @@ public class TestClient implements Client {
             this.uuid = UUID.randomUUID().toString();
             Registry registry = LocateRegistry.getRegistry(address);
             Server server = (Server) registry.lookup(name);
-            this.server = server;
-            server.registerApplication(uuid, "127.0.0.1", testClient);
+            List<nodeAddress> nodes = server.getAllNodesOnNetwork();
+            for(nodeAddress node : nodes) {
+                Registry reg = LocateRegistry.getRegistry(node.getAddress());
+                Server newServer = (Server) reg.lookup(node.getName());
+
+                servers.add(newServer);
+                newServer.registerApplication(uuid, "127.0.0.1", testClient);
+
+            }
+            // this.server = server;
         }catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -66,7 +75,9 @@ public class TestClient implements Client {
             String voteUUID = UUID.randomUUID().toString();
             voteUUIDs.add(voteUUID);
             System.out.println("sending vote.. with UUID " + voteUUID);
-            server.receiveVote(vote, this.uuid, voteUUID);
+            for(Server server : servers) {
+                server.receiveVote(vote, this.uuid, voteUUID);
+            }
         } catch(Exception exception) {
             exception.printStackTrace();
         }

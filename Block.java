@@ -17,4 +17,8 @@ public class Block implements Serializable{
         this.nounce = nounce;
         this.proof = proof;
     }
+
+    public String getPrevHash() {
+        return prevHash;
+    }
 }
