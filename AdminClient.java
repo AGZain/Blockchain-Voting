@@ -13,7 +13,7 @@ public class AdminClient {
 
     public static void main(String args[]) {
         AdminClient adminClient = new AdminClient();
-        adminClient.connectToServers("127.0.0.1", "test");
+        adminClient.connectToServers(args[0], args[1]);
         adminClient.mainMenu();
     }
 

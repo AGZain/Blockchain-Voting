@@ -1,4 +1,4 @@
-import java.util.ArrayList;  
+import java.util.*;  
 import java.lang.Math;
 
 //Equation:
@@ -6,8 +6,8 @@ import java.lang.Math;
 
 public class PoW{
     //State Variables
-    static ArrayList<Integer> res = new ArrayList<Integer>();
-    static int nounce = 8;    //nounce = 300000 took my laptop around 40 seconds to solve, you can tweak these values 
+    static List<Integer> res = new ArrayList<Integer>();
+    int nounce = 30000;    //nounce = 300000 took my laptop around 40 seconds to solve, you can tweak these values 
     /* THE CONSTRUCTOR */
     public PoW() {
     }
@@ -17,7 +17,7 @@ public class PoW{
      * These are then stored in the res and non_res lists respectively
      */
     void buildProblems() {
-        ArrayList<Integer> x_list = new ArrayList<Integer>();   //list of all numbers co-prime of nounce
+        List<Integer> x_list = new ArrayList<Integer>();   //list of all numbers co-prime of nounce
         /* Finding co primes for given nounce */
         for(int i = 1; i < nounce; i++) {
             if(rel_Prime(nounce, i) ) { 
@@ -33,7 +33,7 @@ public class PoW{
      * Getter function that gets the list of all residual integers
      * @return the list of residual integers
      */
-    public ArrayList<Integer> get_res() {
+    public List<Integer> get_res() {
         return res;
     }
 
@@ -72,7 +72,6 @@ public class PoW{
         switch(res.size() ) {
             case 0:
                 res.add(a);
-                System.out.println("Res -> " + a);
             break;
             //If the list is not empty, perform the loop
             default:
@@ -80,7 +79,6 @@ public class PoW{
             if(!res.contains(a) ) {
                 //If this residue for x was not found, make var 'a' a residue
                 res.add(a);
-                System.out.println("Res -> " + a + ", " + x);
             }            
         }   
     }
@@ -92,7 +90,7 @@ public class PoW{
      * @param a_list list of found residues
      * @return Boolean if the answer is correct or incorrect
      */ 
-    static Boolean checkAns(int nounce, ArrayList<Integer>a_list) {
+    static Boolean checkAns(int nounce, List<Integer>a_list) {
         for(int i = 0; i < a_list.size(); i++) {
             double gcd = findGCD(a_list.get(i), nounce);
             if(gcd != 1){ 

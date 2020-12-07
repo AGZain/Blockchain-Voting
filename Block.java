@@ -1,15 +1,14 @@
 import java.io.*; 
-
+import java.util.*;
 public class Block implements Serializable{
     String timestamp;
     int id;
     String data;
     String prevHash;
-    PoW pow;//Need Hash value, 8 length string maybe
     int nounce;
-    String proof;
+    List<Integer> proof;
 
-    public Block(String timestamp, int id, String data, String prevHash, int nounce, String proof) {
+    public Block(String timestamp, int id, String data, String prevHash, int nounce, List<Integer> proof) {
         this.timestamp = timestamp;
         this.id = id;
         this.data = data;

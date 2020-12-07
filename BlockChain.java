@@ -13,6 +13,7 @@ public class BlockChain extends Thread {
     BlockingQueue<Vote> completedTransaction = new LinkedBlockingQueue<Vote>();   
     HashMap<String, Block> pendingBlocks = new HashMap<String, Block>();
     HashMap<String, String> pendingPOWs = new HashMap<String, String>(); 
+    PoW pow = new PoW();
 
 
     List<Block> minedBlocks;                    //might not be needed, maybe we can remove
@@ -30,7 +31,7 @@ public class BlockChain extends Thread {
 
     public void addNewTransaction(Vote vote) {
         //users can add anew transaction which can be added to a blocking queue.
-        System.out.println("adding new transaction to blockchain");
+        System.out.println("adding new transaction to queue");
         try{
             newTransactions.add(vote); 
         } catch(Exception exception) {
@@ -45,20 +46,23 @@ public class BlockChain extends Thread {
 
         while(true) {
             try {
+                System.out.println("got a new block to mine!");
                 Vote newTransaction = newTransactions.take();
                 //do POW then create block.
-                System.out.println("got a new block to mine!");
+                pow.buildProblems();
+                List<Integer> proof = pow.get_res();
+                int nounce = pow.nounce;
                 Block block = new Block(new java.util.Date().toString(),           //create the block based on the new transaction...
                                         ++blocks.get(blocks.size()-1).id,
                                         newTransaction.getVote(),
                                         latestHash,
-                                        1,                      //last two are temp. nounce and proof examples, will be replaced later
-                                        "10");
+                                        nounce,                      //last two are temp. nounce and proof examples, will be replaced later
+                                        proof);
 
                 //generate hash.
 
                 pendingBlocks.put(newTransaction.getVoteId(), block);
-                pendingPOWs.put(newTransaction.getVoteId(), "TEST POW");
+                pendingPOWs.put(newTransaction.getVoteId(), "POW");
                 completedTransaction.add(newTransaction); 
             } catch(Exception exception) {
                 exception.printStackTrace();
@@ -80,12 +84,9 @@ public class BlockChain extends Thread {
     }
 
     public void createBlock(Block block) {
-        //Do this part only if the block creation has been verified
-        //oW pow = new PoW();    
-        //block.pow = pow;    //Assigning pow to a block, change "block" to the most recent block made
-        System.out.println("Adding new block to blockchain");
-        if(block.getPrevHash().equals(latestHash)) {
+        if(block.getPrevHash().equals(latestHash) && pow.checkAns(block.nounce, block.proof)) {
             try {
+                System.out.println("Adding new block to blockchain");
                 latestHash = generateHash(block);
                 blocks.add(block);
             } catch(Exception exception) {

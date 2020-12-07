@@ -31,7 +31,7 @@ public class ServerImplementation extends Thread implements Server {
                                     "GENESIS-BLOCK",
                                     "000000",
                                     0,
-                                    "0");
+                                    new ArrayList<Integer>());
             try {
                 blockchain.blocks.add(genesis); 
                 blockchain.latestHash = blockchain.generateHash(genesis);
@@ -154,6 +154,7 @@ public class ServerImplementation extends Thread implements Server {
 
     public void receiveBlockAndPOW(String POW, Block block) throws RemoteException {
         //verify POW first.
+        blockchain.pow.nounce -= 100;
         blockchain.createBlock(block);
     }
 
