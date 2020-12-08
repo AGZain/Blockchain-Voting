@@ -7,7 +7,7 @@ import java.lang.Math;
 public class PoW{
     //State Variables
     static List<Integer> res = new ArrayList<Integer>();
-    int nounce = 30000;    //nounce = 300000 took my laptop around 40 seconds to solve, you can tweak these values 
+    int nounce = 30000;    
     /* THE CONSTRUCTOR */
     public PoW() {
     }

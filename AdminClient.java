@@ -1,3 +1,4 @@
+//This is the admin client, admins to add candidates and add voters
 import java.rmi.*;
 import java.rmi.registry.*;
 import java.rmi.server.UnicastRemoteObject;
@@ -17,6 +18,7 @@ public class AdminClient {
         adminClient.mainMenu();
     }
 
+    //main menu, used to actually use the functionality
     public void mainMenu() {
         Scanner scanner = new Scanner(System.in);
         String option;
@@ -33,7 +35,7 @@ public class AdminClient {
             mainMenu();
         }
     }
-
+    //used to add a candidate
     public void addCandidateMenu() {
         Scanner scanner = new Scanner(System.in);
         String name;
@@ -50,6 +52,7 @@ public class AdminClient {
         mainMenu();
     }
 
+    //add a voter
     public void addVoterMenu() {
         Scanner scanner = new Scanner(System.in);
         String name, sin;
@@ -73,7 +76,7 @@ public class AdminClient {
     }
 
 
-
+    //used to connect to all the nodes on the network
     public void connectToServers(String address, String name) {
         try {
             this.uuid = UUID.randomUUID().toString();
@@ -85,7 +88,6 @@ public class AdminClient {
                 Server newServer = (Server) reg.lookup(node.getName());
 
                 servers.add(newServer);
-                // newServer.registerApplication(uuid, "127.0.0.1", clientName);
             }
         }catch (Exception exception) {
             exception.printStackTrace();

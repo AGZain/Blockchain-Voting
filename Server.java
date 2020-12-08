@@ -1,3 +1,4 @@
+//This is the interface for the server, which are the nodes on the blockchain itself
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.net.*;

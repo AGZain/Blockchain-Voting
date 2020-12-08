@@ -1,3 +1,4 @@
+//This is the application layer, what voters will use to cast votes
 
 import java.rmi.*;
 import java.rmi.registry.*;
@@ -13,11 +14,6 @@ public class ApplicationClient implements Client {
     String clientName;
     HashSet<String> voteUUIDs = new HashSet<String>();
     List<String> voteOptions = new ArrayList<String>();
-
-    public ApplicationClient(Server server) throws RemoteException {
-        super();
-        // this.server = server;
-    }
 
     public ApplicationClient() throws RemoteException {
         super();
@@ -36,6 +32,8 @@ public class ApplicationClient implements Client {
         }
     }
 
+    //use to start the application server so that nodes on the blockchain network can message this application
+    //@param String name - name of the client (which will be a unique ID UUID)
     public void StartServer(String name) {
         System.setSecurityManager(new SecurityManager());
         try {
@@ -47,6 +45,8 @@ public class ApplicationClient implements Client {
         }
     }
 
+    //Connect to any node on the blockchain network
+    //@param String address, String name - the address and name of any node on the network
     public void connectToServers(String address, String name) {
         try {
             Registry registry = LocateRegistry.getRegistry(address);
@@ -66,6 +66,7 @@ public class ApplicationClient implements Client {
         }
     }
 
+    //Used to submit a vote, need the vote itself and the voters unique ID
     public void submitVote(String vote, String voteUUID) {
         try{
             voteUUIDs.add(voteUUID);
@@ -77,19 +78,19 @@ public class ApplicationClient implements Client {
             exception.printStackTrace();
         }
     }
-
+    
+    //When a response is sent from a node on the blockchain network, this method replies to the winner
     public boolean transactionCompleted(String voteUUID) throws RemoteException {
 
         if(voteUUIDs.contains(voteUUID)) {
             voteUUIDs.remove(voteUUID);
-            // System.out.println(voteUUID + ": a miner has completed this transaction.");
             return true;
         } else {
-            // System.out.println(voteUUID + ": a transaction does not exist. Maybe it has already been completed?");
             return false;
         }
     }
 
+    //Main menu so user can pick options
     public void mainMenu() {
         Scanner scanner = new Scanner(System.in);
         String option;
@@ -108,6 +109,7 @@ public class ApplicationClient implements Client {
         }
     }
 
+    //Allows users to cast a vote
     public void votingPage() {
         Scanner scanner = new Scanner(System.in);
         int vote;
@@ -135,6 +137,7 @@ public class ApplicationClient implements Client {
         mainMenu();
     }
 
+    //View the statistics of the votes
     public void voteStats() {
         List<Block> blocks;
         HashMap<String, Integer> votes = new HashMap<String, Integer>();

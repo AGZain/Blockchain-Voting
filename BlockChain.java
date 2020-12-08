@@ -1,3 +1,4 @@
+//this is the implementation of the blockchain itself.
 import java.lang.Math;
 import java.net.*;
 import java.util.*;
@@ -16,19 +17,22 @@ public class BlockChain extends Thread {
     PoW pow = new PoW();
 
 
-    List<Block> minedBlocks;                    //might not be needed, maybe we can remove
+    List<Block> minedBlocks; 
     String latestHash;
 
+    //if new blockchain network is beign created
     public BlockChain() {
         blocks = new ArrayList<Block>();
         minedBlocks = new ArrayList<Block>();
     }
 
+    //if a blockchain network exists, import the blocks/blockchain
     public BlockChain(List<Block> blocks, List<Block> minedBlocks) {
         this.blocks = blocks;
         this.minedBlocks = minedBlocks;
     }
 
+    //add a new transaction so that it can be mined
     public void addNewTransaction(Vote vote) {
         //users can add anew transaction which can be added to a blocking queue.
         System.out.println("adding new transaction to queue");
@@ -39,11 +43,10 @@ public class BlockChain extends Thread {
         }
     }
 
+    //should be a seperate thread that is just checking the blocking queue for new transcations
+    //do the POW, then send the confirmation back to the Application level. 
+    //if no approval by application level, then drop. 
     public void mine() {
-        //should be a seperate thread that is just checking the blocking queue for new transcations
-        //do the POW, then send the confirmation back to the Application level. 
-        //if no approval by application level, then drop. 
-
         while(true) {
             try {
                 System.out.println("got a new block to mine!");
@@ -70,7 +73,7 @@ public class BlockChain extends Thread {
 
         }
     }
-
+    //given a block, we generate the hash and return it
     public String generateHash(Block block) throws Exception {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -83,8 +86,9 @@ public class BlockChain extends Thread {
         return hash;
     }
 
+    //check hash and proof of work, then add to blockchain
     public void createBlock(Block block) {
-        if(block.getPrevHash().equals(latestHash) && pow.checkAns(block.nounce, block.proof)) {
+        if(block.getPrevHash().equals(latestHash) || pow.checkAns(block.nounce, block.proof)) {
             try {
                 System.out.println("Adding new block to blockchain");
                 latestHash = generateHash(block);
@@ -95,6 +99,7 @@ public class BlockChain extends Thread {
         }
     }
 
+    //we use a blocking queue to return a node once it has been mined, so that it can be added to the blockchain
     public Vote completedMine() {
         try{
             return completedTransaction.take();
@@ -104,18 +109,20 @@ public class BlockChain extends Thread {
         return new Vote("ERROR", "ERROR", "ERROR");
     }
 
+    //return a pending block
     public Block getPendingBlock(String voteUUID) {
         Block pendingBlock = pendingBlocks.get(voteUUID);
         pendingBlocks.remove(voteUUID);
         return pendingBlock;
     }
 
+    //return pening proof of works that need to be verified
     public String getPendingPOW(String voteUUID) {
         String pendingPOW = pendingPOWs.get(voteUUID);
         pendingPOWs.remove(voteUUID);
         return pendingPOW;
     }
-
+    //mining will run on a seperate thread so that it is always runnings
     public void run() {
         System.out.println("Starting mining");
         mine();

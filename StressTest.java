@@ -1,3 +1,4 @@
+//this is a stress test of the network, it sends a significant number of messages to the network in order to add a load
 import java.util.*;
 import java.util.UUID;
 import java.rmi.*;
@@ -15,7 +16,7 @@ public class StressTest implements Client{
     public StressTest() throws RemoteException {
         super();
     }
-
+    //main method
     public static void main(String args[]) throws Exception{
         for(int i = 0; i < 500; i++) {
             StressTest applicationClient = new StressTest();
@@ -26,12 +27,12 @@ public class StressTest implements Client{
             applicationClient.submitVote("testVote", Integer.toString(i));
         }
     }
-
+    //add a unique voter to the blockchain network
     public void addVoter(String uniqueVoterId) throws Exception{
         for(Server server : servers) 
             server.addVoter(uniqueVoterId);
     }
-
+    //acctually submit a vote for each voter
     public void submitVote(String vote, String voteUUID) {
         try{
             voteUUIDs.add(voteUUID);
@@ -44,7 +45,7 @@ public class StressTest implements Client{
         }
     }
 
-
+    //start a server so that the blockchain network can communicate with this stress test application
     public void StartServer(String name) {
         System.setSecurityManager(new SecurityManager());
         try {
@@ -56,7 +57,7 @@ public class StressTest implements Client{
         }
     }
 
-
+    //connect to all the nodes on the blockchain network.
     public void connectToServers(String address, String name) {
         try {
             Registry registry = LocateRegistry.getRegistry(address);
@@ -76,14 +77,13 @@ public class StressTest implements Client{
         }
     }
 
+    //if a node on the network requests to be the winner, agree if it is the first node
     public boolean transactionCompleted(String voteUUID) throws RemoteException {
 
         if(voteUUIDs.contains(voteUUID)) {
             voteUUIDs.remove(voteUUID);
-            // System.out.println(voteUUID + ": a miner has completed this transaction.");
             return true;
         } else {
-            // System.out.println(voteUUID + ": a transaction does not exist. Maybe it has already been completed?");
             return false;
         }
     }
